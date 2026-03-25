@@ -1,0 +1,112 @@
+<%= form_with model: post, local: true, multipart: true, class: "space-y-6" do |f| %>
+
+  <!-- Error Messages -->
+  <% if post.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-4">
+      <h3 class="text-red-700 font-semibold text-sm mb-2">
+        ⚠️ <%= post.errors.count %>개의 오류가 있어요:
+      </h3>
+      <ul class="list-disc list-inside text-red-600 text-sm space-y-1">
+        <% post.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Title -->
+  <div>
+    <%= f.label :title, "제목 *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+    <%= f.text_field :title,
+        placeholder: "글 제목을 입력하세요",
+        class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent" %>
+  </div>
+
+  <!-- Excerpt -->
+  <div>
+    <%= f.label :excerpt, "요약 (선택)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+    <%= f.text_area :excerpt, rows: 2,
+        placeholder: "글의 짧은 요약을 입력하세요 (목록 및 미리보기에 사용됩니다)",
+        class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent resize-none" %>
+  </div>
+
+  <!-- Category & Published (2-column) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :category_id, "카테고리", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <%= f.select :category_id,
+          options_from_collection_for_select(@categories, :id, :name, post.category_id),
+          { include_blank: "카테고리 없음" },
+          class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent bg-white" %>
+    </div>
+
+    <div>
+      <%= f.label :cover_image, "커버 이미지", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+      <% if post.cover_image.attached? %>
+        <div class="mb-2">
+          <%= image_tag post.cover_image, class: "w-full h-32 object-cover rounded-xl" %>
+        </div>
+      <% end %>
+      <%= f.file_field :cover_image, accept: "image/*",
+          class: "w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 bg-white" %>
+    </div>
+  </div>
+
+  <!-- Tags -->
+  <div>
+    <label class="block text-sm font-semibold text-gray-700 mb-2">태그 (선택)</label>
+    <div class="flex flex-wrap gap-2">
+      <% @tags.each do |tag| %>
+        <label class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 cursor-pointer hover:border-sky-300 hover:bg-sky-50 transition">
+          <%= check_box_tag "post[tag_ids][]", tag.id, post.tags.include?(tag),
+              class: "rounded text-sky-500 focus:ring-sky-300" %>
+          <span class="text-sm text-gray-600">#<%= tag.name %></span>
+        </label>
+      <% end %>
+      <% if @tags.empty? %>
+        <p class="text-sm text-gray-400 italic">등록된 태그가 없어요.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Extra Photos -->
+  <div>
+    <label class="block text-sm font-semibold text-gray-700 mb-2">추가 사진 (여러 장 선택 가능)</label>
+    <% if post.photos.attached? %>
+      <div class="flex flex-wrap gap-2 mb-3">
+        <% post.photos.each do |photo| %>
+          <%= image_tag photo, class: "h-20 w-20 object-cover rounded-lg" %>
+        <% end %>
+      </div>
+    <% end %>
+    <%= f.file_field :photos, multiple: true, accept: "image/*",
+        class: "w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 bg-white" %>
+  </div>
+
+  <!-- Content -->
+  <div>
+    <%= f.label :content, "내용 *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+    <%= f.text_area :content, rows: 16,
+        placeholder: "여행 이야기를 자유롭게 적어보세요...",
+        class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent resize-y" %>
+  </div>
+
+  <!-- Published Toggle -->
+  <div class="flex items-center gap-3 bg-sky-50 border border-sky-100 rounded-xl p-4">
+    <%= f.check_box :published,
+        class: "w-4 h-4 rounded text-sky-500 focus:ring-sky-300 cursor-pointer" %>
+    <%= f.label :published, class: "cursor-pointer" do %>
+      <span class="font-semibold text-gray-700 text-sm">공개 발행</span>
+      <p class="text-xs text-gray-500 mt-0.5">체크하면 블로그에 공개됩니다. 체크 해제 시 비공개 저장.</p>
+    <% end %>
+  </div>
+
+  <!-- Submit Buttons -->
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit post.new_record? ? "✅ 글 등록하기" : "💾 수정 저장하기",
+        class: "bg-sky-500 text-white px-8 py-3 rounded-xl font-medium hover:bg-sky-600 transition cursor-pointer shadow-sm" %>
+    <%= link_to "취소", (post.new_record? ? posts_path : post_path(post)),
+        class: "text-gray-500 hover:text-gray-700 text-sm font-medium transition px-4 py-3" %>
+  </div>
+
+<% end %>

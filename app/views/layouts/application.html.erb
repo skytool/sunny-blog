@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title><%= content_for(:title) || "여행하는 블로그" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-sky-50 text-gray-800 font-sans min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-sky-100 sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <a href="<%= root_path %>" class="text-2xl font-bold text-sky-600 flex items-center gap-2">
+          ☀️ 여행하는 블로그
+        </a>
+        <div class="flex items-center gap-6 text-sm font-medium">
+          <%= link_to "블로그", posts_path, class: "text-gray-600 hover:text-sky-600 transition" %>
+          <%= link_to "여행지", travel_spots_path, class: "text-gray-600 hover:text-sky-600 transition" %>
+          <%= link_to "여행후기", travel_reviews_path, class: "text-gray-600 hover:text-sky-600 transition" %>
+          <% if user_signed_in? %>
+            <%= link_to "새 글 쓰기", new_post_path, class: "bg-sky-500 text-white px-4 py-1.5 rounded-full hover:bg-sky-600 transition" %>
+            <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete }, class: "text-gray-500 hover:text-red-500 transition" %>
+          <% else %>
+            <%= link_to "로그인", new_user_session_path, class: "bg-sky-500 text-white px-4 py-1.5 rounded-full hover:bg-sky-600 transition" %>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash messages -->
+    <% if notice %>
+      <div class="bg-green-50 border-l-4 border-green-400 text-green-700 px-6 py-3 text-sm">
+        <%= notice %>
+      </div>
+    <% end %>
+    <% if alert %>
+      <div class="bg-red-50 border-l-4 border-red-400 text-red-700 px-6 py-3 text-sm">
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <!-- Main content -->
+    <main class="flex-1">
+      <%= yield %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-sky-100 text-center py-6 text-sm text-gray-400 mt-12">
+      <p>☀️ 여행하는 블로그 &copy; <%= Date.today.year %> · 맑은 날의 기록</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,110 @@
+<% content_for :title, "여행 후기 모아보기" %>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+
+  <!-- Page Header -->
+  <div class="mb-10">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">⭐ 여행 후기</h1>
+    <p class="text-gray-500">여행자들의 생생한 경험담을 모아봤어요</p>
+  </div>
+
+  <% if @reviews.any? %>
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+      <div class="bg-white rounded-2xl shadow-sm p-5 text-center">
+        <div class="text-3xl font-bold text-sky-600 mb-1"><%= @reviews.count %></div>
+        <div class="text-sm text-gray-500">총 후기</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm p-5 text-center">
+        <% avg_all = @reviews.average(:rating).to_f.round(1) %>
+        <div class="text-3xl font-bold text-yellow-500 mb-1"><%= avg_all %></div>
+        <div class="text-sm text-gray-500">평균 평점</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm p-5 text-center">
+        <div class="text-3xl font-bold text-sky-600 mb-1">
+          <%= @reviews.map(&:travel_spot_id).uniq.count %>
+        </div>
+        <div class="text-sm text-gray-500">여행지</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm p-5 text-center">
+        <div class="text-3xl font-bold text-sky-600 mb-1">
+          <%= @reviews.select { |r| r.rating == 5 }.count %>
+        </div>
+        <div class="text-sm text-gray-500">⭐ 별점 5개</div>
+      </div>
+    </div>
+
+    <!-- Reviews List -->
+    <div class="space-y-5">
+      <% @reviews.each do |review| %>
+        <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <div class="flex flex-col sm:flex-row">
+            <!-- Cover Image -->
+            <% if review.cover_image.present? %>
+              <div class="sm:w-56 h-48 sm:h-auto flex-shrink-0 overflow-hidden">
+                <img src="<%= review.cover_image %>" alt="<%= review.title %>"
+                     class="w-full h-full object-cover">
+              </div>
+            <% else %>
+              <div class="sm:w-40 h-32 sm:h-auto flex-shrink-0 bg-gradient-to-br from-sky-100 to-amber-100 flex items-center justify-center text-4xl">
+                📸
+              </div>
+            <% end %>
+
+            <!-- Content -->
+            <div class="p-6 flex-1 flex flex-col">
+              <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <h2 class="font-bold text-gray-800 text-lg leading-snug mb-1">
+                    <%= review.title %>
+                  </h2>
+                  <p class="text-sm text-sky-600 font-medium">
+                    📍 <%= link_to review.travel_spot.name, travel_spot_path(review.travel_spot),
+                            class: "hover:text-sky-700 hover:underline" %>
+                    · <%= [review.travel_spot.city, review.travel_spot.country].compact.join(", ") %>
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span class="text-yellow-400 text-base">
+                    <%= "★" * review.rating %><%= "☆" * (5 - review.rating) %>
+                  </span>
+                  <span class="bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                    <%= review.rating %>/5
+                  </span>
+                </div>
+              </div>
+
+              <p class="text-gray-600 text-sm leading-relaxed flex-1 line-clamp-3">
+                <%= review.content %>
+              </p>
+
+              <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400">
+                <div class="flex items-center gap-3">
+                  <span>✍️ <%= review.user.email.split("@").first %></span>
+                  <% if review.visited_at %>
+                    <span>📅 방문 <%= review.visited_at.strftime("%Y년 %m월") %></span>
+                  <% end %>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span><%= review.created_at.strftime("%Y.%m.%d") %></span>
+                  <%= link_to "자세히 보기 →", travel_spot_path(review.travel_spot),
+                      class: "text-sky-600 hover:text-sky-700 font-medium transition" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  <% else %>
+    <div class="text-center py-24 text-gray-400">
+      <div class="text-7xl mb-5">💬</div>
+      <p class="text-xl font-medium mb-2">아직 여행 후기가 없어요</p>
+      <p class="text-sm mb-6">여행지를 방문한 적 있다면 첫 후기를 남겨보세요!</p>
+      <%= link_to "여행지 보러 가기 🗺️", travel_spots_path,
+          class: "inline-block bg-sky-500 text-white px-8 py-3 rounded-full font-medium hover:bg-sky-600 transition" %>
+    </div>
+  <% end %>
+
+</div>

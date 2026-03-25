@@ -1,0 +1,16 @@
+<% content_for :title, "글 수정 - #{@post.title}" %>
+
+<div class="max-w-3xl mx-auto px-4 py-12">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <%= link_to "← 글로 돌아가기", post_path(@post), class: "text-sky-600 text-sm hover:text-sky-700 transition font-medium" %>
+    <h1 class="text-3xl font-bold text-gray-800 mt-4">✏️ 글 수정</h1>
+    <p class="text-gray-500 mt-1 truncate">&ldquo;<%= @post.title %>&rdquo;</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm p-8">
+    <%= render "form", post: @post %>
+  </div>
+
+</div>

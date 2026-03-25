@@ -1,0 +1,187 @@
+<% content_for :title, @travel_spot.name %>
+
+<div class="max-w-5xl mx-auto px-4 py-12">
+
+  <!-- Back Link -->
+  <div class="mb-6">
+    <%= link_to "← 여행지 목록", travel_spots_path, class: "text-sky-600 text-sm hover:text-sky-700 transition font-medium" %>
+  </div>
+
+  <!-- Spot Header -->
+  <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
+    <% if @travel_spot.cover_image.present? %>
+      <div class="h-72 md:h-96 overflow-hidden">
+        <img src="<%= @travel_spot.cover_image %>" alt="<%= @travel_spot.name %>"
+             class="w-full h-full object-cover">
+      </div>
+    <% else %>
+      <div class="h-52 bg-gradient-to-br from-amber-100 via-sky-100 to-blue-200 flex items-center justify-center text-7xl">
+        🏔️
+      </div>
+    <% end %>
+
+    <div class="p-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-2" style="font-family: 'Playfair Display', serif;">
+        <%= @travel_spot.name %>
+      </h1>
+      <p class="text-sky-600 font-medium text-lg mb-4">
+        📍 <%= [@travel_spot.city, @travel_spot.country].compact.join(", ") %>
+      </p>
+
+      <!-- Stats Row -->
+      <div class="flex flex-wrap gap-6 py-4 border-y border-gray-100 text-sm">
+        <% if @reviews.any? %>
+          <% avg = @reviews.average(:rating).to_f.round(1) %>
+          <div class="flex items-center gap-2">
+            <span class="text-yellow-400 text-base">
+              <% avg_int = avg.round %>
+              <%= "★" * avg_int %><%= "☆" * (5 - avg_int) %>
+            </span>
+            <span class="font-semibold text-gray-700"><%= avg %></span>
+            <span class="text-gray-400">/ 5.0</span>
+          </div>
+          <div class="text-gray-500">💬 후기 <strong class="text-gray-700"><%= @reviews.count %></strong>개</div>
+        <% else %>
+          <div class="text-gray-400 italic">아직 후기가 없어요. 첫 후기를 남겨보세요!</div>
+        <% end %>
+        <% if @travel_spot.latitude.present? && @travel_spot.longitude.present? %>
+          <div class="text-gray-400 text-xs">
+            🌐 <%= @travel_spot.latitude %>, <%= @travel_spot.longitude %>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @travel_spot.description.present? %>
+        <div class="mt-6 text-gray-600 leading-relaxed text-base">
+          <%= simple_format @travel_spot.description %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <section class="mb-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">
+        ⭐ 여행 후기
+        <span class="text-sky-500 text-xl ml-1">(<%= @reviews.count %>)</span>
+      </h2>
+      <% if user_signed_in? %>
+        <%= link_to "✏️ 후기 작성", new_travel_spot_travel_review_path(@travel_spot),
+            class: "bg-sky-500 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-sky-600 transition shadow-sm" %>
+      <% else %>
+        <%= link_to "로그인 후 후기 작성", new_user_session_path,
+            class: "border border-sky-300 text-sky-600 px-5 py-2 rounded-full text-sm font-medium hover:bg-sky-50 transition" %>
+      <% end %>
+    </div>
+
+    <% if @reviews.any? %>
+      <div class="space-y-5">
+        <% @reviews.each do |review| %>
+          <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+            <% if review.cover_image.present? %>
+              <div class="h-48 rounded-xl overflow-hidden mb-4">
+                <img src="<%= review.cover_image %>" alt="<%= review.title %>"
+                     class="w-full h-full object-cover">
+              </div>
+            <% end %>
+
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="font-bold text-gray-800 text-lg mb-1"><%= review.title %></h3>
+                <div class="flex items-center gap-3 text-sm">
+                  <span class="text-yellow-400">
+                    <%= "★" * review.rating %><%= "☆" * (5 - review.rating) %>
+                  </span>
+                  <span class="text-gray-400 font-medium"><%= review.rating %>/5</span>
+                  <% if review.visited_at %>
+                    <span class="text-gray-400">📅 방문 <%= review.visited_at.strftime("%Y.%m") %></span>
+                  <% end %>
+                </div>
+              </div>
+              <% if user_signed_in? && current_user == review.user %>
+                <div class="flex gap-2 text-xs">
+                  <%= link_to "수정", edit_travel_spot_travel_review_path(@travel_spot, review),
+                      class: "text-sky-600 hover:text-sky-700 font-medium transition px-2 py-1 rounded hover:bg-sky-50" %>
+                  <%= link_to "삭제", travel_spot_travel_review_path(@travel_spot, review),
+                      data: { turbo_method: :delete, turbo_confirm: "후기를 삭제할까요?" },
+                      class: "text-red-500 hover:text-red-600 font-medium transition px-2 py-1 rounded hover:bg-red-50" %>
+                </div>
+              <% end %>
+            </div>
+
+            <p class="text-gray-600 text-sm leading-relaxed"><%= review.content %></p>
+
+            <div class="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400">
+              ✍️ <%= review.user.email.split("@").first %>
+              · <%= review.created_at.strftime("%Y.%m.%d") %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-2xl shadow-sm p-12 text-center text-gray-400">
+        <div class="text-5xl mb-4">💬</div>
+        <p class="text-lg font-medium mb-1">아직 후기가 없어요</p>
+        <p class="text-sm">이 여행지를 방문한 적 있다면 첫 후기를 남겨보세요!</p>
+        <% if user_signed_in? %>
+          <%= link_to "✏️ 첫 후기 쓰기", new_travel_spot_travel_review_path(@travel_spot),
+              class: "mt-5 inline-block bg-sky-500 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-sky-600 transition" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <!-- Quick Review Form (inline, for logged-in users who haven't yet written one) -->
+  <% if user_signed_in? && !@reviews.map(&:user_id).include?(current_user.id) %>
+    <section class="bg-white rounded-2xl shadow-sm p-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">✏️ 후기 남기기</h2>
+      <%= form_with model: [@travel_spot, @new_review], local: true do |f| %>
+        <div class="space-y-4">
+          <% if @new_review.errors.any? %>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-600">
+              <%= @new_review.errors.full_messages.to_sentence %>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <%= f.label :title, "후기 제목 *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+              <%= f.text_field :title, placeholder: "후기 제목을 입력하세요",
+                  class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent" %>
+            </div>
+            <div>
+              <%= f.label :rating, "평점 *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+              <%= f.select :rating,
+                  options_for_select([["⭐ 1점", 1], ["⭐⭐ 2점", 2], ["⭐⭐⭐ 3점", 3], ["⭐⭐⭐⭐ 4점", 4], ["⭐⭐⭐⭐⭐ 5점", 5]], 5),
+                  {},
+                  class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent bg-white" %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <%= f.label :visited_at, "방문일 (선택)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+              <%= f.date_field :visited_at,
+                  class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent" %>
+            </div>
+            <div>
+              <%= f.label :cover_image, "사진 URL (선택)", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+              <%= f.url_field :cover_image, placeholder: "https://...",
+                  class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent" %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :content, "후기 내용 *", class: "block text-sm font-semibold text-gray-700 mb-2" %>
+            <%= f.text_area :content, rows: 5, placeholder: "이 여행지에 대한 생생한 후기를 남겨주세요...",
+                class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent resize-none" %>
+          </div>
+
+          <%= f.submit "📝 후기 등록하기", class: "bg-sky-500 text-white px-8 py-3 rounded-xl font-medium hover:bg-sky-600 transition cursor-pointer" %>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+
+</div>

@@ -1,0 +1,104 @@
+<% content_for :title, "여행지 목록" %>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">🗺️ 여행지</h1>
+    <p class="text-gray-500">전 세계의 아름다운 여행지를 탐험해보세요</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 mb-10">
+    <%= form_with url: travel_spots_path, method: :get, local: true, class: "flex gap-3" do |f| %>
+      <div class="relative flex-1">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+        <%= f.text_field :q, value: params[:q],
+            placeholder: "도시, 나라, 여행지 이름으로 검색...",
+            class: "w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent" %>
+      </div>
+      <%= f.submit "검색", class: "bg-sky-500 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition cursor-pointer" %>
+      <% if params[:q].present? %>
+        <%= link_to "초기화", travel_spots_path, class: "px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Search Result Info -->
+  <% if params[:q].present? %>
+    <p class="text-sm text-gray-500 mb-5">
+      &ldquo;<strong class="text-gray-700"><%= params[:q] %></strong>&rdquo; 검색 결과: <%= @travel_spots.count %>곳
+    </p>
+  <% end %>
+
+  <!-- Spots Grid -->
+  <% if @travel_spots.any? %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @travel_spots.each do |spot| %>
+        <%= link_to travel_spot_path(spot), class: "group block" do %>
+          <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+            <% if spot.cover_image.present? %>
+              <div class="h-52 overflow-hidden">
+                <img src="<%= spot.cover_image %>" alt="<%= spot.name %>"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              </div>
+            <% else %>
+              <div class="h-52 bg-gradient-to-br from-amber-50 via-sky-100 to-blue-100 flex flex-col items-center justify-center gap-2">
+                <span class="text-5xl">🏔️</span>
+                <span class="text-xs text-gray-400">사진 없음</span>
+              </div>
+            <% end %>
+
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-2">
+                <h2 class="font-bold text-gray-800 text-xl group-hover:text-sky-600 transition-colors leading-tight">
+                  <%= spot.name %>
+                </h2>
+              </div>
+              <p class="text-sm text-sky-600 font-medium mb-2">
+                📍 <%= [spot.city, spot.country].compact.join(", ") %>
+              </p>
+              <% if spot.description.present? %>
+                <p class="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">
+                  <%= spot.description %>
+                </p>
+              <% end %>
+
+              <!-- Review Stats -->
+              <% reviews = spot.travel_reviews %>
+              <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                <% if reviews.any? %>
+                  <% avg = reviews.average(:rating).to_f.round(1) %>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-yellow-400 text-sm">
+                      <% avg_int = avg.round %>
+                      <%= "★" * avg_int %><%= "☆" * (5 - avg_int) %>
+                    </span>
+                    <span class="text-sm text-gray-600 font-medium"><%= avg %></span>
+                  </div>
+                  <span class="text-xs text-gray-400">후기 <%= reviews.count %>개</span>
+                <% else %>
+                  <span class="text-xs text-gray-400 italic">후기 없음</span>
+                  <span class="text-xs text-sky-500 font-medium">첫 후기 남기기 →</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-20 text-gray-400">
+      <div class="text-6xl mb-4">🌏</div>
+      <p class="text-lg font-medium">
+        <% if params[:q].present? %>
+          검색 결과가 없어요.
+        <% else %>
+          등록된 여행지가 없어요.
+        <% end %>
+      </p>
+      <p class="text-sm mt-1">다른 검색어를 시도해 보세요.</p>
+    </div>
+  <% end %>
+
+</div>

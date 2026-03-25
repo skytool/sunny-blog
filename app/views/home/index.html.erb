@@ -1,0 +1,169 @@
+<% content_for :title, "여행하는 블로그 - 맑은 날의 기록" %>
+
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 text-white py-24 px-4 overflow-hidden">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute top-10 left-10 text-9xl">☀️</div>
+    <div class="absolute bottom-10 right-20 text-7xl">✈️</div>
+    <div class="absolute top-1/2 left-1/3 text-6xl">🌍</div>
+  </div>
+  <div class="relative max-w-4xl mx-auto text-center">
+    <p class="text-sky-200 text-sm font-medium tracking-widest uppercase mb-4">✨ 맑은 날의 여행 기록</p>
+    <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight" style="font-family: 'Playfair Display', serif;">
+      여행하는 블로그
+    </h1>
+    <p class="text-sky-100 text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+      세상의 아름다운 곳들을 함께 탐험해요.<br>
+      여행 이야기, 숨겨진 명소, 생생한 후기까지.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= link_to "📖 블로그 보기", posts_path, class: "bg-white text-sky-600 font-semibold px-8 py-3 rounded-full hover:bg-sky-50 transition shadow-lg" %>
+      <%= link_to "🗺️ 여행지 탐색", travel_spots_path, class: "bg-sky-700 text-white font-semibold px-8 py-3 rounded-full hover:bg-sky-800 transition shadow-lg border border-sky-400" %>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Posts Grid -->
+<section class="max-w-6xl mx-auto px-4 py-16">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">📝 최근 글</h2>
+      <p class="text-gray-500 mt-1">따끈따끈한 여행 이야기를 만나보세요</p>
+    </div>
+    <%= link_to "모두 보기 →", posts_path, class: "text-sky-600 font-medium hover:text-sky-700 transition text-sm" %>
+  </div>
+
+  <% if @recent_posts.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @recent_posts.each do |post| %>
+        <article class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+          <% if post.cover_image.present? %>
+            <div class="h-48 overflow-hidden">
+              <img src="<%= post.cover_image %>" alt="<%= post.title %>"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+          <% else %>
+            <div class="h-48 bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center text-5xl">
+              📸
+            </div>
+          <% end %>
+          <div class="p-5">
+            <% if post.category %>
+              <span class="inline-block bg-sky-100 text-sky-700 text-xs font-medium px-2.5 py-1 rounded-full mb-3">
+                <%= post.category.name %>
+              </span>
+            <% end %>
+            <h3 class="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-sky-600 transition-colors">
+              <%= link_to post.title, post_path(post) %>
+            </h3>
+            <% if post.excerpt.present? %>
+              <p class="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4"><%= post.excerpt %></p>
+            <% end %>
+            <div class="flex items-center justify-between text-xs text-gray-400">
+              <span>✍️ <%= post.user.email.split("@").first %></span>
+              <span><%= post.created_at.strftime("%Y.%m.%d") %></span>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-16 text-gray-400">
+      <div class="text-6xl mb-4">📭</div>
+      <p class="text-lg">아직 작성된 글이 없어요.</p>
+      <% if user_signed_in? %>
+        <%= link_to "첫 글 쓰기 ✏️", new_post_path, class: "mt-4 inline-block text-sky-600 hover:underline" %>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<!-- Featured Travel Spots -->
+<section class="bg-white py-16">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-800">🗺️ 추천 여행지</h2>
+        <p class="text-gray-500 mt-1">꼭 한번 가봐야 할 아름다운 곳들</p>
+      </div>
+      <%= link_to "전체 여행지 →", travel_spots_path, class: "text-sky-600 font-medium hover:text-sky-700 transition text-sm" %>
+    </div>
+
+    <% if @featured_spots.any? %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <% @featured_spots.each do |spot| %>
+          <%= link_to travel_spot_path(spot), class: "group block" do %>
+            <div class="relative bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <% if spot.cover_image.present? %>
+                <div class="h-40 overflow-hidden">
+                  <img src="<%= spot.cover_image %>" alt="<%= spot.name %>"
+                       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                </div>
+              <% else %>
+                <div class="h-40 bg-gradient-to-br from-amber-100 to-sky-100 flex items-center justify-center text-4xl">
+                  🏔️
+                </div>
+              <% end %>
+              <div class="p-4">
+                <h3 class="font-bold text-gray-800 group-hover:text-sky-600 transition-colors"><%= spot.name %></h3>
+                <p class="text-sm text-gray-500 mt-1">📍 <%= [spot.city, spot.country].compact.join(", ") %></p>
+                <p class="text-xs text-sky-500 mt-2 font-medium">
+                  ⭐ 후기 <%= spot.travel_reviews.count %>개
+                </p>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12 text-gray-400">
+        <div class="text-5xl mb-3">🌏</div>
+        <p>등록된 여행지가 없어요.</p>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- Recent Reviews -->
+<section class="max-w-6xl mx-auto px-4 py-16">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800">⭐ 최근 여행 후기</h2>
+      <p class="text-gray-500 mt-1">여행자들의 생생한 이야기</p>
+    </div>
+    <%= link_to "후기 모두 보기 →", travel_reviews_path, class: "text-sky-600 font-medium hover:text-sky-700 transition text-sm" %>
+  </div>
+
+  <% if @recent_reviews.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% @recent_reviews.each do |review| %>
+        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-yellow-400 text-lg">
+              <%= "★" * review.rating %><%= "☆" * (5 - review.rating) %>
+            </span>
+            <span class="text-xs text-gray-400"><%= review.created_at.strftime("%Y.%m.%d") %></span>
+          </div>
+          <h3 class="font-bold text-gray-800 mb-1 leading-snug">
+            <%= link_to review.title, travel_spot_path(review.travel_spot), class: "hover:text-sky-600 transition" %>
+          </h3>
+          <p class="text-xs text-sky-600 font-medium mb-3">
+            📍 <%= review.travel_spot.name %>
+          </p>
+          <p class="text-sm text-gray-500 leading-relaxed line-clamp-3"><%= review.content %></p>
+          <div class="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400">
+            ✍️ <%= review.user.email.split("@").first %>
+            <% if review.visited_at %>
+              · 방문일 <%= review.visited_at.strftime("%Y.%m") %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12 text-gray-400">
+      <div class="text-5xl mb-3">💬</div>
+      <p>아직 후기가 없어요.</p>
+    </div>
+  <% end %>
+</section>

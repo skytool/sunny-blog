@@ -1,0 +1,98 @@
+<% content_for :title, "블로그 글 목록" %>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+
+  <!-- Page Header -->
+  <div class="mb-10">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">📖 블로그</h1>
+    <p class="text-gray-500">여행하는 이야기, 여행지 정보, 그리고 일상의 기록들</p>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="bg-white rounded-2xl shadow-sm p-4 mb-8 flex flex-col sm:flex-row gap-3">
+    <%= form_with url: posts_path, method: :get, local: true, class: "flex-1 flex gap-3" do |f| %>
+      <div class="relative flex-1">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+        <%= f.text_field :q, value: params[:q], placeholder: "글 제목으로 검색...",
+            class: "w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-transparent" %>
+      </div>
+      <%= f.hidden_field :category_id, value: params[:category_id] %>
+      <%= f.submit "검색", class: "bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition cursor-pointer" %>
+    <% end %>
+  </div>
+
+  <!-- Category Filter Tabs -->
+  <div class="flex flex-wrap gap-2 mb-8">
+    <%= link_to "전체", posts_path(q: params[:q]),
+        class: "px-4 py-1.5 rounded-full text-sm font-medium transition #{params[:category_id].blank? ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-sky-50 border border-gray-200'}" %>
+    <% @categories.each do |category| %>
+      <%= link_to category.name, posts_path(category_id: category.id, q: params[:q]),
+          class: "px-4 py-1.5 rounded-full text-sm font-medium transition #{params[:category_id].to_s == category.id.to_s ? 'bg-sky-500 text-white' : 'bg-white text-gray-600 hover:bg-sky-50 border border-gray-200'}" %>
+    <% end %>
+  </div>
+
+  <!-- Posts Grid -->
+  <% if @posts.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @posts.each do |post| %>
+        <article class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex flex-col">
+          <%= link_to post_path(post) do %>
+            <% if post.cover_image.present? %>
+              <div class="h-48 overflow-hidden">
+                <img src="<%= post.cover_image %>" alt="<%= post.title %>"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              </div>
+            <% else %>
+              <div class="h-48 bg-gradient-to-br from-sky-50 to-blue-100 flex items-center justify-center text-5xl">
+                📝
+              </div>
+            <% end %>
+          <% end %>
+
+          <div class="p-5 flex flex-col flex-1">
+            <div class="flex items-center gap-2 mb-3">
+              <% if post.category %>
+                <span class="bg-sky-100 text-sky-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                  <%= post.category.name %>
+                </span>
+              <% end %>
+              <% post.tags.first(2).each do |tag| %>
+                <span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">#<%= tag.name %></span>
+              <% end %>
+            </div>
+
+            <h2 class="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-sky-600 transition-colors flex-1">
+              <%= link_to post.title, post_path(post) %>
+            </h2>
+
+            <% if post.excerpt.present? %>
+              <p class="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4"><%= post.excerpt %></p>
+            <% end %>
+
+            <div class="flex items-center justify-between text-xs text-gray-400 pt-3 border-t border-gray-100 mt-auto">
+              <span>✍️ <%= post.user.email.split("@").first %></span>
+              <span><%= post.created_at.strftime("%Y.%m.%d") %></span>
+            </div>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-20 text-gray-400">
+      <div class="text-6xl mb-4">📭</div>
+      <p class="text-lg font-medium">조건에 맞는 글이 없어요.</p>
+      <p class="text-sm mt-1">다른 검색어나 카테고리를 시도해 보세요.</p>
+      <% if user_signed_in? %>
+        <%= link_to "✏️ 새 글 쓰기", new_post_path, class: "mt-6 inline-block bg-sky-500 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-sky-600 transition" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Write Button (floating at bottom) -->
+  <% if user_signed_in? %>
+    <div class="mt-10 text-center">
+      <%= link_to "✏️ 새 글 쓰기", new_post_path, class: "inline-block bg-sky-500 text-white px-8 py-3 rounded-full font-medium hover:bg-sky-600 transition shadow-md" %>
+    </div>
+  <% end %>
+
+</div>

@@ -1,0 +1,155 @@
+<% content_for :title, "관리자 대시보드" %>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+
+  <!-- Header -->
+  <div class="mb-10 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-800">🛠️ 관리자 대시보드</h1>
+      <p class="text-gray-500 mt-1">여행하는 블로그 관리 센터</p>
+    </div>
+    <div class="text-sm text-gray-500 bg-white rounded-xl px-4 py-2 shadow-sm border border-gray-100">
+      👤 <%= current_user.email %>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
+    <div class="bg-white rounded-2xl shadow-sm p-5 border-l-4 border-sky-500">
+      <div class="text-3xl font-bold text-sky-600 mb-1"><%= @posts_count %></div>
+      <div class="text-sm text-gray-500 font-medium">📝 전체 글</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-5 border-l-4 border-green-400">
+      <div class="text-3xl font-bold text-green-600 mb-1"><%= @published_count %></div>
+      <div class="text-sm text-gray-500 font-medium">✅ 공개 글</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-5 border-l-4 border-amber-400">
+      <div class="text-3xl font-bold text-amber-600 mb-1"><%= @travel_spots_count %></div>
+      <div class="text-sm text-gray-500 font-medium">🗺️ 여행지</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-5 border-l-4 border-yellow-400">
+      <div class="text-3xl font-bold text-yellow-600 mb-1"><%= @reviews_count %></div>
+      <div class="text-sm text-gray-500 font-medium">⭐ 여행 후기</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-5 border-l-4 border-purple-400">
+      <div class="text-3xl font-bold text-purple-600 mb-1"><%= @comments_count %></div>
+      <div class="text-sm text-gray-500 font-medium">💬 댓글</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-2xl shadow-sm p-6 mb-8">
+    <h2 class="text-lg font-bold text-gray-700 mb-4">⚡ 빠른 작업</h2>
+    <div class="flex flex-wrap gap-3">
+      <%= link_to "✏️ 새 글 쓰기", new_post_path,
+          class: "bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-sky-600 transition" %>
+      <%= link_to "📋 글 관리", admin_posts_path,
+          class: "bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition" %>
+      <%= link_to "🏷️ 카테고리 관리", admin_categories_path,
+          class: "bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition" %>
+      <%= link_to "🔖 태그 관리", admin_tags_path,
+          class: "bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition" %>
+      <%= link_to "🗺️ 여행지 관리", admin_travel_spots_path,
+          class: "bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition" %>
+      <%= link_to "⭐ 후기 관리", admin_travel_reviews_path,
+          class: "bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition" %>
+      <%= link_to "👥 사용자 관리", admin_users_path,
+          class: "bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition" %>
+    </div>
+  </div>
+
+  <!-- Two Column: Recent Posts + Recent Reviews -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Recent Posts -->
+    <div class="bg-white rounded-2xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-lg font-bold text-gray-700">📝 최근 글</h2>
+        <%= link_to "전체 보기", admin_posts_path, class: "text-sky-600 text-xs font-medium hover:text-sky-700 transition" %>
+      </div>
+
+      <% if @recent_posts.any? %>
+        <div class="space-y-3">
+          <% @recent_posts.each do |post| %>
+            <div class="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-800 text-sm truncate">
+                  <%= link_to post.title, post_path(post), class: "hover:text-sky-600 transition" %>
+                </p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="<%= post.published? ? 'text-green-600 bg-green-50' : 'text-gray-400 bg-gray-50' %> text-xs font-medium px-2 py-0.5 rounded-full">
+                    <%= post.published? ? "✅ 공개" : "🔒 비공개" %>
+                  </span>
+                  <span class="text-xs text-gray-400"><%= post.created_at.strftime("%m.%d") %></span>
+                </div>
+              </div>
+              <div class="flex gap-2 text-xs flex-shrink-0">
+                <%= link_to "수정", edit_post_path(post), class: "text-sky-600 hover:text-sky-700 font-medium" %>
+                <%= link_to "삭제", post_path(post),
+                    data: { turbo_method: :delete, turbo_confirm: "삭제할까요?" },
+                    class: "text-red-400 hover:text-red-500 font-medium" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8 text-gray-400 text-sm">
+          <div class="text-3xl mb-2">📭</div>
+          글이 없어요.
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Recent Reviews -->
+    <div class="bg-white rounded-2xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-lg font-bold text-gray-700">⭐ 최근 여행 후기</h2>
+        <%= link_to "전체 보기", admin_travel_reviews_path, class: "text-sky-600 text-xs font-medium hover:text-sky-700 transition" %>
+      </div>
+
+      <% if @recent_reviews.any? %>
+        <div class="space-y-3">
+          <% @recent_reviews.each do |review| %>
+            <div class="flex items-start gap-3 py-3 border-b border-gray-50 last:border-0">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-800 text-sm truncate"><%= review.title %></p>
+                <div class="flex items-center gap-2 mt-1 text-xs text-gray-400">
+                  <span class="text-yellow-400"><%= "★" * review.rating %></span>
+                  <span>📍 <%= review.travel_spot.name %></span>
+                  <span><%= review.created_at.strftime("%m.%d") %></span>
+                </div>
+              </div>
+              <div class="flex-shrink-0">
+                <%= link_to "삭제", travel_spot_travel_review_path(review.travel_spot, review),
+                    data: { turbo_method: :delete, turbo_confirm: "후기를 삭제할까요?" },
+                    class: "text-xs text-red-400 hover:text-red-500 font-medium" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8 text-gray-400 text-sm">
+          <div class="text-3xl mb-2">💬</div>
+          후기가 없어요.
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <!-- Unpublished Warning -->
+  <% unpublished = @posts_count - @published_count %>
+  <% if unpublished > 0 %>
+    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
+      <span class="text-2xl">⚠️</span>
+      <div>
+        <p class="text-amber-800 font-semibold text-sm">비공개 글 <%= unpublished %>개</p>
+        <p class="text-amber-600 text-xs mt-0.5">
+          아직 공개되지 않은 글이 있어요.
+          <%= link_to "글 관리에서 확인하기", admin_posts_path, class: "underline font-medium" %>
+        </p>
+      </div>
+    </div>
+  <% end %>
+
+</div>

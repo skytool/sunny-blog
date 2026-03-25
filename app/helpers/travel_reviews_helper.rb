@@ -1,0 +1,2 @@
+module TravelReviewsHelper
+end
