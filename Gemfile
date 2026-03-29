@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Pin psych to bundled version to avoid native extension build issues on Windows
-gem "psych", "~> 5.1.2"
+gem "psych", "~> 5.3.1"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.2", ">= 8.1.2.1"
