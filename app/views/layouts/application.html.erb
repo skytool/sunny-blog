@@ -7,7 +7,7 @@
     <meta property="og:title" content="<%= content_for(:title).present? ? "#{content_for(:title)} · 여행하는 블로그" : '여행하는 블로그' %>">
     <meta property="og:description" content="<%= content_for(:description).present? ? content_for(:description) : '세상의 아름다운 곳들을 함께 탐험해요.' %>">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="<%= content_for(:og_image).present? ? content_for(:og_image) : asset_path('icon.png') %>">
+    <meta property="og:image" content="<%= content_for(:og_image).present? ? content_for(:og_image) : '/icon.png' %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
