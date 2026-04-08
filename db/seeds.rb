@@ -2,7 +2,9 @@
 admin = User.find_or_create_by!(email: "admin@example.com") do |u|
   u.password = "password123"
   u.password_confirmation = "password123"
+  u.admin = true
 end
+admin.update!(admin: true) unless admin.admin?
 puts "✅ Admin: admin@example.com / password123"
 
 # Categories

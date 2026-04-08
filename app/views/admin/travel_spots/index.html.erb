@@ -1,0 +1,50 @@
+<% content_for :title, "여행지 관리" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">🗺️ 여행지 관리</h1>
+  <%= link_to "＋ 새 여행지", new_admin_travel_spot_path,
+      class: "bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-600 transition" %>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">여행지</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">국가 / 도시</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">좌표</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">후기 수</th>
+        <th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @travel_spots.each do |spot| %>
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-5 py-3.5 font-medium text-gray-800">
+            <%= link_to spot.name, travel_spot_path(spot), class: "hover:text-sky-600 transition", target: "_blank" %>
+          </td>
+          <td class="px-5 py-3.5 text-gray-500"><%= [spot.city, spot.country].compact.join(", ") %></td>
+          <td class="px-5 py-3.5 text-gray-400 text-xs">
+            <% if spot.latitude.present? %>
+              <%= spot.latitude.round(4) %>, <%= spot.longitude.round(4) %>
+            <% else %>
+              -
+            <% end %>
+          </td>
+          <td class="px-5 py-3.5 text-gray-500"><%= spot.travel_reviews.count %>개</td>
+          <td class="px-5 py-3.5 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <%= link_to "수정", edit_admin_travel_spot_path(spot), class: "text-sky-600 hover:text-sky-700 font-medium" %>
+              <%= link_to "삭제", admin_travel_spot_path(spot),
+                  data: { turbo_method: :delete, turbo_confirm: "여행지를 삭제할까요?" },
+                  class: "text-red-500 hover:text-red-600 font-medium" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <% if @travel_spots.empty? %>
+        <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">여행지가 없습니다.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,42 @@
+<% content_for :title, "여행후기 관리" %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-gray-800">⭐ 여행후기 관리</h1>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">제목</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">여행지</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">작성자</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">평점</th>
+        <th class="text-left px-5 py-3 text-gray-500 font-medium">날짜</th>
+        <th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @reviews.each do |review| %>
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-5 py-3.5 font-medium text-gray-800"><%= review.title %></td>
+          <td class="px-5 py-3.5 text-gray-500">
+            <%= link_to review.travel_spot.name, travel_spot_path(review.travel_spot),
+                class: "hover:text-sky-600 transition", target: "_blank" %>
+          </td>
+          <td class="px-5 py-3.5 text-gray-500"><%= review.user.email.split("@").first %></td>
+          <td class="px-5 py-3.5 text-yellow-400"><%= "★" * review.rating %><span class="text-gray-300"><%= "★" * (5 - review.rating) %></span></td>
+          <td class="px-5 py-3.5 text-gray-400"><%= review.created_at.strftime("%Y.%m.%d") %></td>
+          <td class="px-5 py-3.5 text-right">
+            <%= link_to "삭제", admin_travel_review_path(review),
+                data: { turbo_method: :delete, turbo_confirm: "후기를 삭제할까요?" },
+                class: "text-red-500 hover:text-red-600 font-medium" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @reviews.empty? %>
+        <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">여행후기가 없습니다.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,56 @@
+<% if travel_spot.errors.any? %>
+  <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-5 text-sm text-red-600">
+    <% travel_spot.errors.full_messages.each do |msg| %><p>• <%= msg %></p><% end %>
+  </div>
+<% end %>
+
+<div class="space-y-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :name, "여행지 이름 *", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+      <%= f.text_field :name, placeholder: "예: 제주도",
+          class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+    </div>
+    <div>
+      <%= f.label :country, "국가 *", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+      <%= f.text_field :country, placeholder: "예: 한국",
+          class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <%= f.label :city, "도시", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+      <%= f.text_field :city, placeholder: "예: 제주시",
+          class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+    </div>
+    <div>
+      <%= f.label :latitude, "위도", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+      <%= f.number_field :latitude, step: "any", placeholder: "33.4996",
+          class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+    </div>
+    <div>
+      <%= f.label :longitude, "경도", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+      <%= f.number_field :longitude, step: "any", placeholder: "126.5312",
+          class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :description, "설명", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+    <%= f.text_area :description, rows: 4, placeholder: "여행지 설명을 입력하세요",
+        class: "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 resize-none" %>
+  </div>
+
+  <div>
+    <%= f.label :cover_image, "커버 이미지 URL", class: "block text-sm font-semibold text-gray-700 mb-1.5" %>
+    <%= f.url_field :cover_image, placeholder: "https://images.unsplash.com/...",
+        class: "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" %>
+  </div>
+
+  <div class="flex gap-3 pt-2">
+    <%= f.submit travel_spot.new_record? ? "✅ 생성" : "💾 저장",
+        class: "bg-sky-500 text-white px-6 py-2.5 rounded-xl font-medium hover:bg-sky-600 transition cursor-pointer" %>
+    <%= link_to "취소", admin_travel_spots_path, class: "px-6 py-2.5 text-sm text-gray-500 hover:text-gray-700 transition" %>
+  </div>
+</div>

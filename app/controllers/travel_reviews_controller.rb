@@ -1,5 +1,5 @@
 class TravelReviewsController < ApplicationController
-  before_action :set_travel_spot
+  before_action :set_travel_spot, except: [ :index ]
   before_action :set_review, only: [ :edit, :update, :destroy ]
   before_action :authenticate_user!, only: [ :new, :create, :edit, :update, :destroy ]
 

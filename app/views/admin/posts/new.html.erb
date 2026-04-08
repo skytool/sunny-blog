@@ -1,0 +1,14 @@
+<% content_for :title, "새 포스트" %>
+
+<div class="max-w-3xl">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to "← 목록", admin_posts_path, class: "text-gray-400 hover:text-gray-600 transition text-sm" %>
+    <h1 class="text-2xl font-bold text-gray-800">새 포스트</h1>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-7">
+    <%= form_with model: [:admin, @post], multipart: true do |f| %>
+      <%= render "form", post: @post, f: f %>
+    <% end %>
+  </div>
+</div>

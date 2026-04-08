@@ -1,0 +1,12 @@
+<% content_for :title, "태그 수정" %>
+<div class="max-w-md">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to "← 목록", admin_tags_path, class: "text-gray-400 hover:text-gray-600 text-sm" %>
+    <h1 class="text-2xl font-bold text-gray-800">태그 수정</h1>
+  </div>
+  <div class="bg-white rounded-xl shadow-sm p-7">
+    <%= form_with model: [:admin, @tag] do |f| %>
+      <%= render "form", tag: @tag, f: f %>
+    <% end %>
+  </div>
+</div>

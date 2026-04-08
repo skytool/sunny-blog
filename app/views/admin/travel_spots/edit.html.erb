@@ -1,0 +1,12 @@
+<% content_for :title, "여행지 수정" %>
+<div class="max-w-2xl">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to "← 목록", admin_travel_spots_path, class: "text-gray-400 hover:text-gray-600 text-sm" %>
+    <h1 class="text-2xl font-bold text-gray-800">여행지 수정</h1>
+  </div>
+  <div class="bg-white rounded-xl shadow-sm p-7">
+    <%= form_with model: [:admin, @travel_spot] do |f| %>
+      <%= render "form", travel_spot: @travel_spot, f: f %>
+    <% end %>
+  </div>
+</div>

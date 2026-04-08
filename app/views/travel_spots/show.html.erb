@@ -46,7 +46,7 @@
         <% end %>
         <% if @travel_spot.latitude.present? && @travel_spot.longitude.present? %>
           <div class="text-gray-400 text-xs">
-            🌐 <%= @travel_spot.latitude %>, <%= @travel_spot.longitude %>
+            🌐 <%= @travel_spot.latitude.round(4) %>, <%= @travel_spot.longitude.round(4) %>
           </div>
         <% end %>
       </div>
@@ -57,6 +57,28 @@
         </div>
       <% end %>
     </div>
+
+    <% if @travel_spot.latitude.present? && @travel_spot.longitude.present? %>
+      <% content_for :head do %>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <% end %>
+      <div class="border-t border-gray-100">
+        <div id="travel-spot-map" style="height: 280px;"></div>
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            var map = L.map('travel-spot-map').setView([<%= @travel_spot.latitude %>, <%= @travel_spot.longitude %>], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            L.marker([<%= @travel_spot.latitude %>, <%= @travel_spot.longitude %>])
+              .addTo(map)
+              .bindPopup('<strong><%= j @travel_spot.name %></strong><br><%= j [@travel_spot.city, @travel_spot.country].compact.join(", ") %>')
+              .openPopup();
+          });
+        </script>
+      </div>
+    <% end %>
   </div>
 
   <!-- Reviews Section -->

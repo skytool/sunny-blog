@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title><%= content_for(:title) || "관리자" %> · 여행하는 블로그</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-gray-900 text-white min-h-screen flex flex-col fixed top-0 left-0 z-40">
+      <div class="p-5 border-b border-gray-700">
+        <%= link_to root_path, class: "text-lg font-bold text-sky-400 flex items-center gap-2" do %>
+          ☀️ 여행하는 블로그
+        <% end %>
+        <p class="text-gray-500 text-xs mt-1">관리자 패널</p>
+      </div>
+
+      <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        <%= link_to admin_dashboard_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path == admin_dashboard_path ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          🏠 <span>대시보드</span>
+        <% end %>
+
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 pt-4 pb-1">콘텐츠</p>
+
+        <%= link_to admin_posts_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?(admin_posts_path) ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          📝 <span>포스트</span>
+        <% end %>
+        <%= link_to admin_categories_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?(admin_categories_path) ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          🗂️ <span>카테고리</span>
+        <% end %>
+        <%= link_to admin_tags_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?(admin_tags_path) ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          🏷️ <span>태그</span>
+        <% end %>
+
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 pt-4 pb-1">여행</p>
+
+        <%= link_to admin_travel_spots_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?(admin_travel_spots_path) ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          🗺️ <span>여행지</span>
+        <% end %>
+        <%= link_to admin_travel_reviews_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?(admin_travel_reviews_path) ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          ⭐ <span>여행후기</span>
+        <% end %>
+
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 pt-4 pb-1">관리</p>
+
+        <%= link_to admin_users_path,
+            class: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition #{request.path.start_with?(admin_users_path) ? 'bg-sky-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}" do %>
+          👥 <span>사용자</span>
+        <% end %>
+      </nav>
+
+      <div class="p-4 border-t border-gray-700 space-y-2">
+        <div class="flex items-center gap-3 mb-1">
+          <div class="w-7 h-7 rounded-full bg-sky-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+            <%= current_user.email[0].upcase %>
+          </div>
+          <p class="text-xs text-gray-300 truncate"><%= current_user.email %></p>
+        </div>
+        <%= link_to "← 사이트로", root_path, class: "block text-xs text-gray-400 hover:text-white transition px-1" %>
+        <%= link_to "로그아웃", destroy_user_session_path, data: { turbo_method: :delete }, class: "block text-xs text-red-400 hover:text-red-300 transition px-1" %>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 ml-60 flex flex-col min-h-screen">
+      <% if notice %>
+        <div class="bg-green-50 border-b border-green-200 text-green-700 px-6 py-3 text-sm">
+          ✅ <%= notice %>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="bg-red-50 border-b border-red-200 text-red-700 px-6 py-3 text-sm">
+          ⚠️ <%= alert %>
+        </div>
+      <% end %>
+
+      <main class="flex-1 p-8">
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>
